@@ -72,13 +72,13 @@ Solidity 0.8.24 · OpenZeppelin 5 · Hardhat · Python FastAPI · Claude API · 
 
 | Contract | Address |
 |---|---|
-| PromptNFT | [0xfB36315112a4f8b1104A3309DF435627cD44AACC](https://sepolia.etherscan.io/address/0xfB36315112a4f8b1104A3309DF435627cD44AACC) |
-| PromptMarketplace | [0x1Ce65f2E9400bbF22154B8cfAF23eCeD6cDC125A](https://sepolia.etherscan.io/address/0x1Ce65f2E9400bbF22154B8cfAF23eCeD6cDC125A) |
+| PromptNFT | [0x34dd0f30e8d5F76f2748EC51e48201e784b3B783](https://sepolia.etherscan.io/address/0x34dd0f30e8d5F76f2748EC51e48201e784b3B783) |
+| PromptMarketplace | [0x0eD541aA47db24710268f9bD94Be71b02fAB5c27](https://sepolia.etherscan.io/address/0x0eD541aA47db24710268f9bD94Be71b02fAB5c27) |
 
 `scripts/e2e_sepolia.py` runs the full flow live: encrypt and pin metadata to IPFS, mint, list,
 a second wallet buys, the buyer unlocks the prompt and the seller is locked out, the seller withdraws.
-First live run: [mint](https://sepolia.etherscan.io/tx/0x2aba19abe7edc5601a432b2f4ca1c1d75018ea9656c9b9d42040a48facae9b02),
-[purchase](https://sepolia.etherscan.io/tx/0x39478676582993cf19c59f5b5e579f1cf8393aaf5e34c4df1f255a45b17822da).
+Latest live run: [mint](https://sepolia.etherscan.io/tx/0xe42991eadd168ef7e38c574b3adaf0cfa64acc5e3cda1c96923b9612946ec0e4),
+[purchase](https://sepolia.etherscan.io/tx/0x179e80d07bc328ab70fedc07cdf88186ba4148cbe15f1f51e7cc3fedb1b35fcc).
 
 ## Hosting
 

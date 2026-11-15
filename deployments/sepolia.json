@@ -1,9 +1,9 @@
 {
   "network": "sepolia",
   "chainId": 11155111,
-  "promptNFT": "0xfB36315112a4f8b1104A3309DF435627cD44AACC",
-  "marketplace": "0x1Ce65f2E9400bbF22154B8cfAF23eCeD6cDC125A",
-  "deployedAt": "2026-11-15T05:24:12.955Z",
+  "promptNFT": "0x34dd0f30e8d5F76f2748EC51e48201e784b3B783",
+  "marketplace": "0x0eD541aA47db24710268f9bD94Be71b02fAB5c27",
+  "deployedAt": "2026-11-15T06:33:24.880Z",
   "abi": {
     "promptNFT": [
       {
