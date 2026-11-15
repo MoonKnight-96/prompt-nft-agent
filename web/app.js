@@ -54,20 +54,34 @@ async function init() {
   state.readNft = new ethers.Contract(state.cfg.promptNFT, state.cfg.abi.promptNFT, reader);
   state.readMarket = new ethers.Contract(state.cfg.marketplace, state.cfg.abi.marketplace, reader);
 
-  if (window.ethereum) {
-    state.provider = new ethers.BrowserProvider(window.ethereum);
-    window.ethereum.on?.("accountsChanged", () => location.reload());
-    window.ethereum.on?.("chainChanged", () => location.reload());
+  // Show the market first; some wallet extensions take a while (or never) answer.
+  loadMarket().catch((e) => banner("Could not load prompts: " + errText(e)));
+
+  state.wallet = await pickWallet();
+  if (state.wallet) {
+    state.provider = new ethers.BrowserProvider(state.wallet);
+    state.wallet.on?.("accountsChanged", () => location.reload());
+    state.wallet.on?.("chainChanged", () => location.reload());
+    state.wallet.request({ method: "eth_accounts" })
+      .then((accts) => (accts.length ? connect().then(loadMarket) : null))
+      .catch((e) => console.warn("Wallet not ready:", e));
   } else {
     banner("Install MetaMask to buy or mint prompts. You can still browse.");
   }
-  // Show the market first; some wallet extensions take a while (or never) answer.
-  loadMarket().catch((e) => banner("Could not load prompts: " + errText(e)));
-  if (window.ethereum) {
-    window.ethereum.request({ method: "eth_accounts" })
-      .then((accts) => (accts.length ? connect().then(loadMarket) : null))
-      .catch((e) => console.warn("Wallet not ready:", e));
-  }
+}
+
+// When several wallet extensions are installed (e.g. MetaMask + Phantom), they
+// fight over window.ethereum. EIP-6963 lets each announce itself, so we can
+// talk to MetaMask directly and fall back to whatever is there.
+async function pickWallet() {
+  const found = [];
+  const onAnnounce = (e) => found.push(e.detail);
+  window.addEventListener("eip6963:announceProvider", onAnnounce);
+  window.dispatchEvent(new Event("eip6963:requestProvider"));
+  await new Promise((r) => setTimeout(r, 400));
+  window.removeEventListener("eip6963:announceProvider", onAnnounce);
+  const metamask = found.find((p) => p.info?.rdns === "io.metamask");
+  return (metamask || found[0])?.provider || window.ethereum || null;
 }
 
 function showTab(name) {
@@ -80,15 +94,16 @@ function showTab(name) {
 async function connect() {
   if (!state.provider) { banner("Install MetaMask to buy or mint prompts."); return; }
   try {
-    await state.provider.send("eth_requestAccounts", []);
-    const net = await state.provider.getNetwork();
-    if (Number(net.chainId) !== state.cfg.chainId) {
+    await state.wallet.request({ method: "eth_requestAccounts" });
+    const chainHex = await state.wallet.request({ method: "eth_chainId" });
+    if (Number(chainHex) !== state.cfg.chainId) {
       try {
-        await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x" + state.cfg.chainId.toString(16) }] });
+        await state.wallet.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x" + state.cfg.chainId.toString(16) }] });
       } catch {
-        banner(`Switch MetaMask to ${state.cfg.network} (chain ${state.cfg.chainId}).`);
+        banner(`Switch MetaMask to ${state.cfg.network} (chain ${state.cfg.chainId}), then click Connect wallet again.`);
         return;
       }
+      state.provider = new ethers.BrowserProvider(state.wallet); // fresh provider on the new network
     }
     state.signer = await state.provider.getSigner();
     state.account = await state.signer.getAddress();
