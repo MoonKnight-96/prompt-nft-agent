@@ -125,6 +125,9 @@ def create_app(settings: Optional[Settings] = None, chain=None, storage: Optiona
             "storage": storage.mode,
             "rpcUrl": settings.public_rpc_url,
             "assist": assistant.enabled,
+            # Non-secret diagnostics: which commit is running, whether the key is present.
+            "version": os.getenv("RENDER_GIT_COMMIT", "local")[:7],
+            "assistKeySet": bool(os.getenv("ANTHROPIC_API_KEY", "").strip()),
         }
 
     @app.post("/api/assist")
