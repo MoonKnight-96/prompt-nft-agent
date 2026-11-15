@@ -1,0 +1,13 @@
+node_modules/
+artifacts/
+cache/
+typechain-types/
+coverage/
+.env
+server/.venv/
+server/storage/
+__pycache__/
+.pytest_cache/
+deployments/localhost.json
+deployments/hardhat.json
+.DS_Store
