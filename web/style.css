@@ -37,3 +37,7 @@ dialog .actions { display: flex; justify-content: flex-end; gap: 8px; }
 footer { text-align: center; color: var(--muted); font-size: 13px; padding: 24px 16px; }
 .empty { color: var(--muted); }
 .grid > .empty { grid-column: 1 / -1; }
+.assist { background: var(--card); border: 1px dashed var(--accent); border-radius: 12px; padding: 14px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 8px; }
+.assist p { margin: 0; }
+.assist-actions { align-items: center; }
+.meta { color: var(--muted); font-size: 13px; }

@@ -29,6 +29,16 @@
 
     <section id="create" class="panel hidden">
       <h1>Mint a prompt</h1>
+      <div id="assistBox" class="assist hidden">
+        <label>Have a rough idea? Let AI draft the listing
+          <textarea id="assistIdea" rows="2" maxlength="1000" placeholder="e.g. a prompt that reviews a startup's pitch deck and lists the 5 biggest red flags for an investor"></textarea>
+        </label>
+        <div class="row assist-actions">
+          <button id="assistBtn" type="button" class="primary">✨ Draft with AI</button>
+          <span id="assistStatus" class="meta"></span>
+        </div>
+        <p class="meta">The draft fills the form below. Review and edit it before minting; you're the creator.</p>
+      </div>
       <form id="createForm">
         <label>Title <input name="title" required minlength="3" maxlength="80" placeholder="10-K risk factor summarizer" /></label>
         <label>Description <textarea name="description" required minlength="10" maxlength="600" rows="3" placeholder="What the prompt does and who it's for"></textarea></label>

@@ -13,13 +13,14 @@ from typing import Dict, Optional, Tuple
 from dotenv import load_dotenv
 from eth_account import Account
 from eth_account.messages import encode_defunct
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from web3 import Web3
 
 import crypto_box
+from assist import Assistant, AssistError
 from storage import Storage
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -69,6 +70,12 @@ class PrepareRequest(BaseModel):
     creator: str
 
 
+class AssistRequest(BaseModel):
+    idea: str = Field(min_length=10, max_length=1000)
+    category: str = Field(default="", max_length=40)
+    model: str = Field(default="", max_length=60)
+
+
 class UnlockRequest(BaseModel):
     token_id: int = Field(ge=1)
     address: str
@@ -86,8 +93,10 @@ def unlock_message(token_id: int, address: str, nonce: str, issued: int) -> str:
     )
 
 
-def create_app(settings: Optional[Settings] = None, chain=None, storage: Optional[Storage] = None) -> FastAPI:
+def create_app(settings: Optional[Settings] = None, chain=None, storage: Optional[Storage] = None,
+               assistant: Optional[Assistant] = None) -> FastAPI:
     settings = settings or Settings()
+    assistant = assistant or Assistant()
     deployment = None
     if settings.deployment_file.exists():
         deployment = json.loads(settings.deployment_file.read_text())
@@ -115,7 +124,20 @@ def create_app(settings: Optional[Settings] = None, chain=None, storage: Optiona
             "abi": deployment["abi"],
             "storage": storage.mode,
             "rpcUrl": settings.public_rpc_url,
+            "assist": assistant.enabled,
         }
+
+    @app.post("/api/assist")
+    def assist(req: AssistRequest, request: Request):
+        # Behind Render's proxy: the last X-Forwarded-For hop is the address the
+        # proxy saw (earlier hops can be forged by the visitor). The global daily
+        # cap in RateLimiter is the hard backstop either way.
+        fwd = request.headers.get("x-forwarded-for", "")
+        client_id = fwd.split(",")[-1].strip() or (request.client.host if request.client else "unknown")
+        try:
+            return assistant.draft(req.idea, req.category, req.model, client_id)
+        except AssistError as e:
+            raise HTTPException(e.status, e.message)
 
     @app.post("/api/prepare")
     def prepare(req: PrepareRequest):

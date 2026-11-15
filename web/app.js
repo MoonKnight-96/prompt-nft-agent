@@ -44,6 +44,10 @@ async function init() {
     return;
   }
   $("netName").textContent = `${state.cfg.network} (chain ${state.cfg.chainId})`;
+  if (state.cfg.assist) {
+    $("assistBox").classList.remove("hidden");
+    $("assistBtn").addEventListener("click", onAssist);
+  }
 
   // Reads always go through the public RPC so browsing works with or without a wallet.
   const reader = new ethers.JsonRpcProvider(state.cfg.rpcUrl, state.cfg.chainId, { staticNetwork: true });
@@ -183,6 +187,31 @@ async function onCreate(ev) {
     ev.target.reset();
   } catch (e) {
     say("Error: " + errText(e));
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function onAssist() {
+  const idea = $("assistIdea").value.trim();
+  const status = $("assistStatus");
+  if (idea.length < 10) { status.textContent = "Describe your idea in a sentence or two."; return; }
+  const form = $("createForm");
+  const btn = $("assistBtn");
+  btn.disabled = true;
+  status.textContent = "Drafting… this can take up to a minute.";
+  try {
+    const d = await api("/api/assist", { method: "POST", body: JSON.stringify({
+      idea, category: form.category.value, model: form.model.value,
+    }) });
+    form.title.value = d.title.slice(0, 80);
+    form.description.value = d.description.slice(0, 600);
+    form.prompt.value = d.prompt.slice(0, 8000);
+    form.sample_output.value = d.sample_output.slice(0, 2000);
+    status.textContent = "Draft ready. Review and edit it below before minting.";
+    form.title.focus();
+  } catch (e) {
+    status.textContent = errText(e);
   } finally {
     btn.disabled = false;
   }

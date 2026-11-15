@@ -26,6 +26,7 @@ Owner ──signs "unlock #id" message──▶ Server checks signature + ownerO
 | `contracts/PromptMarketplace.sol` | Fixed-price listings without escrow. On sale it credits seller, creator royalty and platform fee (max 5%), paid out with a pull-based `withdraw()`. Reentrancy-guarded; stale listings can't be bought. |
 | `server/` (FastAPI) | Encrypts each prompt with its own key (envelope encryption, bound to the prompt hash), stores metadata on IPFS via Pinata or locally, and unlocks prompts only after verifying a wallet signature and on-chain ownership. Single-use nonces stop replay. |
 | `web/` | Plain HTML/JS + ethers.js. Browse, mint, list, buy, unlock, withdraw. |
+| `server/assist.py` | **AI assist**: a creator types a rough idea and Claude (Opus 5.5, structured JSON output) drafts the title, description, full prompt and a sample output. The creator edits it before minting. Rate-limited per visitor and per day; the API key stays on the server. |
 
 ## Security notes
 
@@ -45,7 +46,7 @@ python3 -m venv server/.venv && server/.venv/bin/pip install -r server/requireme
 cp .env.example .env        # then set MASTER_KEY (command is in the file)
 
 npx hardhat test            # 11 contract tests
-(cd server && .venv/bin/python -m pytest -q)   # 7 server tests
+(cd server && .venv/bin/python -m pytest -q)   # 12 server tests
 
 npx hardhat node                                   # terminal 1: local chain
 npx hardhat run scripts/deploy.js --network localhost
@@ -65,7 +66,7 @@ Open http://127.0.0.1:8000 and connect MetaMask to `localhost:8545` (chain 31337
 
 ## Tech
 
-Solidity 0.8.24 · OpenZeppelin 5 · Hardhat · Python FastAPI · cryptography (AES-GCM) · web3.py · ethers.js v6 · IPFS (Pinata)
+Solidity 0.8.24 · OpenZeppelin 5 · Hardhat · Python FastAPI · Claude API · cryptography (AES-GCM) · web3.py · ethers.js v6 · IPFS (Pinata)
 
 ## Live on Sepolia (test network)
 

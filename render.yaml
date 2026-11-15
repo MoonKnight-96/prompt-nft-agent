@@ -23,3 +23,9 @@ services:
         sync: false
       - key: PUBLIC_BASE_URL
         sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ASSIST_PER_HOUR
+        value: "5"
+      - key: ASSIST_PER_DAY
+        value: "100"
