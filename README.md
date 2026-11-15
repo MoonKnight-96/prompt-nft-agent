@@ -67,6 +67,23 @@ Open http://127.0.0.1:8000 and connect MetaMask to `localhost:8545` (chain 31337
 
 Solidity 0.8.24 · OpenZeppelin 5 · Hardhat · Python FastAPI · cryptography (AES-GCM) · web3.py · ethers.js v6 · IPFS (Pinata)
 
+## Live on Sepolia (test network)
+
+| Contract | Address |
+|---|---|
+| PromptNFT | [0xfB36315112a4f8b1104A3309DF435627cD44AACC](https://sepolia.etherscan.io/address/0xfB36315112a4f8b1104A3309DF435627cD44AACC) |
+| PromptMarketplace | [0x1Ce65f2E9400bbF22154B8cfAF23eCeD6cDC125A](https://sepolia.etherscan.io/address/0x1Ce65f2E9400bbF22154B8cfAF23eCeD6cDC125A) |
+
+`scripts/e2e_sepolia.py` runs the full flow live: encrypt and pin metadata to IPFS, mint, list,
+a second wallet buys, the buyer unlocks the prompt and the seller is locked out, the seller withdraws.
+First live run: [mint](https://sepolia.etherscan.io/tx/0x2aba19abe7edc5601a432b2f4ca1c1d75018ea9656c9b9d42040a48facae9b02),
+[purchase](https://sepolia.etherscan.io/tx/0x39478676582993cf19c59f5b5e579f1cf8393aaf5e34c4df1f255a45b17822da).
+
+## Hosting
+
+`render.yaml` deploys the server and website to Render. Set the secret values (`MASTER_KEY`,
+`RPC_URL`, `PINATA_JWT`, `PUBLIC_BASE_URL`) in the Render dashboard.
+
 ## Status
 
-Testnet build. No real funds.
+Testnet only. No real funds.
