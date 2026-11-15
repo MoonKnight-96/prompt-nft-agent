@@ -88,3 +88,7 @@ First live run: [mint](https://sepolia.etherscan.io/tx/0x2aba19abe7edc5601a432b2
 ## Status
 
 Testnet only. No real funds.
+
+## License
+
+Copyright (c) 2026 Krishna Chaitanya Uppalapati. **All rights reserved.** The code is public for viewing and evaluation only; see [LICENSE](LICENSE). Third-party libraries keep their own licenses.

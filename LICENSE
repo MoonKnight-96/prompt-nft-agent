@@ -1,0 +1,9 @@
+Copyright (c) 2026 Krishna Chaitanya Uppalapati. All rights reserved.
+
+This source code is published for viewing and evaluation only. No permission is
+granted to copy, modify, distribute, sublicense, deploy, or sell this software
+or any part of it, in whole or in part, without prior written permission from
+the copyright holder.
+
+Third-party components (for example OpenZeppelin Contracts, ethers.js, FastAPI)
+remain under their own licenses.
