@@ -70,10 +70,12 @@ Solidity 0.8.24 · OpenZeppelin 5 · Hardhat · Python FastAPI · Claude API · 
 
 ## Live on Sepolia (test network)
 
+Both contracts are **verified on Etherscan**: the published source matches the deployed bytecode.
+
 | Contract | Address |
 |---|---|
-| PromptNFT | [0x34dd0f30e8d5F76f2748EC51e48201e784b3B783](https://sepolia.etherscan.io/address/0x34dd0f30e8d5F76f2748EC51e48201e784b3B783) |
-| PromptMarketplace | [0x0eD541aA47db24710268f9bD94Be71b02fAB5c27](https://sepolia.etherscan.io/address/0x0eD541aA47db24710268f9bD94Be71b02fAB5c27) |
+| PromptNFT | [0x34dd0f30e8d5F76f2748EC51e48201e784b3B783](https://sepolia.etherscan.io/address/0x34dd0f30e8d5F76f2748EC51e48201e784b3B783#code) |
+| PromptMarketplace | [0x0eD541aA47db24710268f9bD94Be71b02fAB5c27](https://sepolia.etherscan.io/address/0x0eD541aA47db24710268f9bD94Be71b02fAB5c27#code) |
 
 `scripts/e2e_sepolia.py` runs the full flow live: encrypt and pin metadata to IPFS, mint, list,
 a second wallet buys, the buyer unlocks the prompt and the seller is locked out, the seller withdraws.
