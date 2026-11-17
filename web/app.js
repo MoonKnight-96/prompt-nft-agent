@@ -31,6 +31,7 @@ function metaUrl(uri) {
 // ---------- setup ----------
 async function init() {
   document.querySelectorAll(".tab").forEach((b) => b.addEventListener("click", () => showTab(b.dataset.tab)));
+  document.querySelectorAll("[data-goto]").forEach((b) => b.addEventListener("click", () => showTab(b.dataset.goto)));
   $("connect").addEventListener("click", connect);
   $("createForm").addEventListener("submit", onCreate);
   $("withdraw").addEventListener("click", onWithdraw);
@@ -89,6 +90,7 @@ function showTab(name) {
   ["browse", "create", "mine"].forEach((t) => $(t).classList.toggle("hidden", t !== name));
   if (name === "mine") loadMine();
   if (name === "browse") loadMarket();
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 async function connect() {
@@ -135,23 +137,42 @@ async function allTokens() {
   return Promise.all(ids.map(loadToken));
 }
 
+const COVERS = [
+  ["#8b5cf6", "#ec4899"], ["#06b6d4", "#8b5cf6"], ["#f59e0b", "#ef4444"], ["#10b981", "#06b6d4"],
+  ["#6366f1", "#22d3ee"], ["#f472b6", "#f59e0b"], ["#14b8a6", "#6366f1"], ["#e11d48", "#7c3aed"],
+];
+function coverFor(key) {
+  let h = 0;
+  for (const ch of String(key)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  const [a, b] = COVERS[h % COVERS.length];
+  return `linear-gradient(135deg, ${a}, ${b})`;
+}
+
 function card(t, actions) {
   const attrs = Object.fromEntries((t.meta.attributes || []).map((a) => [a.trait_type, a.value]));
+  const cover = el("div", { class: "cover", style: `--cover:${coverFor((attrs.Category || "") + t.id)}` },
+    el("span", { class: "id" }, `#${t.id}`), el("span", { class: "lock" }, "🔒 Encrypted prompt"));
   return el("div", { class: "card" },
-    el("h3", {}, t.meta.name || `Prompt #${t.id}`),
-    el("div", {}, el("span", { class: "tag" }, attrs.Model || "Any model"), el("span", { class: "tag" }, attrs.Category || "General")),
-    el("div", { class: "meta" }, t.meta.description || ""),
-    el("div", { class: "sample" }, t.meta.sample_output || ""),
-    el("div", { class: "meta" }, `#${t.id} · owner ${short(t.owner)} · creator ${short(t.meta.creator)}`),
-    t.price != null ? el("div", { class: "price" }, `${ethers.formatEther(t.price)} ETH`) : el("div", { class: "meta" }, "Not for sale"),
-    el("div", { class: "actions" }, ...actions),
+    cover,
+    el("div", { class: "body" },
+      el("h3", {}, t.meta.name || `Prompt #${t.id}`),
+      el("div", { class: "tags" }, el("span", { class: "tag" }, attrs.Model || "Any model"), el("span", { class: "tag" }, attrs.Category || "General")),
+      el("div", { class: "meta" }, t.meta.description || ""),
+      el("div", { class: "sample" }, t.meta.sample_output || ""),
+      el("div", { class: "meta" }, `Owner ${short(t.owner)} · Creator ${short(t.meta.creator)}`),
+      el("div", { class: "foot" },
+        t.price != null ? el("div", { class: "price" }, `${ethers.formatEther(t.price)} `, el("small", {}, "ETH")) : el("div", { class: "meta" }, "Not for sale"),
+        el("div", { class: "actions" }, ...actions)),
+    ),
   );
 }
+
+const skeletons = (n = 3) => Array.from({ length: n }, () => el("div", { class: "skeleton" }));
 
 async function loadMarket() {
   if (!state.readNft) return;
   const grid = $("market");
-  grid.replaceChildren(el("p", { class: "empty" }, "Loading…"));
+  grid.replaceChildren(...skeletons());
   const tokens = await allTokens();
   const forSale = tokens.filter((t) => t.price != null);
   grid.replaceChildren(...(forSale.length ? forSale.map((t) => {
@@ -163,7 +184,7 @@ async function loadMarket() {
 async function loadMine() {
   const grid = $("myGrid");
   if (!(await requireWallet())) return;
-  grid.replaceChildren(el("p", { class: "empty" }, "Loading…"));
+  grid.replaceChildren(...skeletons());
   $("proceeds").textContent = ethers.formatEther(await state.readMarket.proceeds(state.account));
   const mine = (await allTokens()).filter((t) => t.owner.toLowerCase() === state.account.toLowerCase());
   grid.replaceChildren(...(mine.length ? mine.map((t) => card(t, [

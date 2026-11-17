@@ -3,15 +3,21 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Prompt NFT Market</title>
+  <title>PromptNFT · Own the prompt, not just the picture</title>
+  <meta name="description" content="Buy and sell AI prompts as NFTs. Prompts are encrypted and unlock only for the current owner." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/style.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
 </head>
 <body>
+  <div class="bg-orbs" aria-hidden="true"><i></i><i></i><i></i></div>
+
   <header>
-    <div class="brand">Prompt<span>NFT</span></div>
+    <div class="brand"><span class="logo">◆</span><span>Prompt<span class="grad">NFT</span></span></div>
     <nav>
-      <button class="tab active" data-tab="browse">Browse</button>
+      <button class="tab active" data-tab="browse">Explore</button>
       <button class="tab" data-tab="create">Create</button>
       <button class="tab" data-tab="mine">My prompts</button>
     </nav>
@@ -22,13 +28,26 @@
 
   <main>
     <section id="browse" class="panel">
-      <h1>Buy AI prompts as NFTs</h1>
-      <p class="lead">Each NFT holds one prompt. You see the description and a sample output; the prompt itself is encrypted and unlocks only for the current owner.</p>
+      <div class="hero">
+        <span class="pill"><span class="dot"></span>Live on Ethereum Sepolia testnet</span>
+        <h1>Own the <span class="grad">prompt</span>,<br />not just the picture.</h1>
+        <p class="lead">Every NFT holds one AI prompt. Buyers see the description and a sample output. The prompt itself stays encrypted and unlocks only for the wallet that owns it. Resell it, and the creator earns a royalty.</p>
+        <div class="hero-cta">
+          <button class="primary big" data-goto="create">✨ Create a prompt</button>
+          <a class="ghost big" href="#market">Browse the market ↓</a>
+        </div>
+        <div class="features">
+          <div><b>🔒 Encrypted</b><span>AES-256-GCM, unlocked by a signed message and an on-chain ownership check</span></div>
+          <div><b>💸 Royalties</b><span>Creators earn up to 10% on every resale (ERC-2981)</span></div>
+          <div><b>🤖 AI assist</b><span>Claude drafts your title, description and sample output</span></div>
+        </div>
+      </div>
+      <div class="section-head"><h2>For sale now</h2><span class="meta">Newest first</span></div>
       <div id="market" class="grid"></div>
     </section>
 
     <section id="create" class="panel hidden">
-      <h1>Mint a prompt</h1>
+      <div class="section-head"><h1>Mint a prompt</h1></div>
       <div id="assistBox" class="assist hidden">
         <label>Have a rough idea? Let AI draft the listing
           <textarea id="assistIdea" rows="2" maxlength="1000" placeholder="e.g. a prompt that reviews a startup's pitch deck and lists the 5 biggest red flags for an investor"></textarea>
@@ -47,19 +66,19 @@
           <label>Category <input name="category" required placeholder="Finance, Coding, Writing..." /></label>
         </div>
         <label>Sample output (public) <textarea name="sample_output" required rows="4" placeholder="Paste an example result so buyers know what they get"></textarea></label>
-        <label>Prompt (encrypted, only the owner can read it) <textarea name="prompt" required minlength="20" maxlength="8000" rows="6"></textarea></label>
+        <label>🔒 Prompt (encrypted, only the owner can read it) <textarea name="prompt" required minlength="20" maxlength="8000" rows="6"></textarea></label>
         <div class="row">
           <label>Creator royalty on resales (%) <input name="royalty" type="number" min="0" max="10" step="0.5" value="5" /></label>
           <label>List for sale now at (ETH, optional) <input name="price" type="number" min="0" step="0.0001" placeholder="0.01" /></label>
         </div>
-        <button class="primary" type="submit">Encrypt &amp; mint</button>
+        <button class="primary big" type="submit">Encrypt &amp; mint</button>
       </form>
       <pre id="createLog" class="log hidden"></pre>
     </section>
 
     <section id="mine" class="panel hidden">
-      <h1>My prompts</h1>
-      <div class="proceeds">Marketplace balance: <b id="proceeds">0</b> ETH <button id="withdraw">Withdraw</button></div>
+      <div class="section-head"><h1>My prompts</h1></div>
+      <div class="proceeds"><div><span class="meta">Marketplace balance</span><b><span id="proceeds">0</span> ETH</b></div><button id="withdraw" class="primary">Withdraw</button></div>
       <div id="myGrid" class="grid"></div>
     </section>
   </main>
@@ -70,7 +89,10 @@
     <div class="actions"><button id="copyPrompt">Copy</button><button id="closeDialog" class="primary">Close</button></div>
   </dialog>
 
-  <footer>Runs on <span id="netName">…</span>. Testnet build: no real money.</footer>
+  <footer>
+    <div>Runs on <span id="netName">…</span>. Testnet build: no real money.</div>
+    <div class="meta">Contracts verified on Etherscan · <a href="https://github.com/MoonKnight-96/prompt-nft-agent" target="_blank" rel="noopener">Source on GitHub</a> · © 2026 Krishna Chaitanya Uppalapati</div>
+  </footer>
   <script src="/static/app.js"></script>
 </body>
 </html>
