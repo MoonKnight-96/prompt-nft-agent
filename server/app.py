@@ -126,7 +126,7 @@ def create_app(settings: Optional[Settings] = None, chain=None, storage: Optiona
     storage = storage or Storage(settings.storage_dir, settings.public_base_url, settings.pinata_jwt)
     nonces: Dict[Tuple[int, str], Tuple[str, int]] = {}  # (token, address) -> (exact message, issued)
 
-    app = FastAPI(title="Prompt NFT")
+    app = FastAPI(title="Vaulted")
 
     def need_chain():
         if chain is None:

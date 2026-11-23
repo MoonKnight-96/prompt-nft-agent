@@ -1,4 +1,4 @@
-/* PromptNFT: dark-first, glassy UI. Light theme follows the OS setting. */
+/* Vaulted: dark-first, glassy UI. Light theme follows the OS setting. */
 :root {
   --bg: #07070d; --bg2: #0d0d18; --card: rgba(22, 22, 38, .72); --card-solid: #151526;
   --text: #f1f1f8; --muted: #9a9ab3; --line: rgba(255, 255, 255, .09); --line-strong: rgba(255, 255, 255, .18);

@@ -1,4 +1,4 @@
-/* Prompt NFT web app. Plain JS + ethers v6 (loaded from CDN). */
+/* Vaulted (prompt NFT marketplace) web app. Plain JS + ethers v6 (loaded from CDN). */
 const $ = (id) => document.getElementById(id);
 const state = { cfg: null, provider: null, signer: null, account: null, nft: null, market: null, readNft: null, readMarket: null };
 
@@ -389,7 +389,7 @@ function focusFromHash() { const m = location.hash.match(/^#prompt-(\d+)$/); if 
 
 async function sharePrompt(t) {
   const url = `${location.origin}/#prompt-${t.id}`;
-  const text = `${t.meta.name || "AI prompt"} on PromptNFT`;
+  const text = `${t.meta.name || "AI prompt"} on Vaulted`;
   try {
     if (navigator.share) await navigator.share({ title: text, url });
     else { await navigator.clipboard.writeText(url); banner("Link copied. Share it anywhere."); setTimeout(() => banner(""), 2500); }
@@ -459,7 +459,7 @@ async function useWalletConnect() {
       chains: [state.cfg.chainId],
       rpcMap: { [state.cfg.chainId]: state.cfg.rpcUrl },
       showQrModal: true,
-      metadata: { name: "PromptNFT", description: "Buy and sell AI prompts as NFTs", url: location.origin, icons: [] },
+      metadata: { name: "Vaulted", description: "Own the prompt, not just the picture: AI prompts as NFTs", url: location.origin, icons: [] },
     });
     $("walletDialog").close();
     await wc.connect();

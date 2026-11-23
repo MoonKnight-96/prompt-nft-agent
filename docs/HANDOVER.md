@@ -1,6 +1,6 @@
-# PromptNFT: Operator Handover Guide (Polygon)
+# Vaulted: Operator Handover Guide (Polygon)
 
-This guide is for the new owner and operator of PromptNFT. After the handover, **you own and run
+This guide is for the new owner and operator of Vaulted (PromptNFT). After the handover, **you own and run
 everything**: the wallet, the contracts, the hosting, the keys, the money and the legal side. The
 original author has no ongoing role.
 

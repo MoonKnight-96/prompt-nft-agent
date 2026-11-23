@@ -1,4 +1,6 @@
-# Prompt NFT Market
+# Vaulted: Prompt NFT Market
+
+_Own the prompt, not just the picture._
 
 Sell AI prompts as NFTs. Not images: the **prompt text itself** is the asset.
 
