@@ -84,7 +84,7 @@ async function init() {
       .then((accts) => (accts.length ? connect().then(loadMarket) : null))
       .catch((e) => console.warn("Wallet not ready:", e));
   } else {
-    banner("Install MetaMask to buy or mint prompts. You can still browse.");
+    banner("No wallet found in this browser. You can still browse; tap Connect wallet for options.");
   }
 }
 
@@ -111,7 +111,7 @@ function showTab(name) {
 }
 
 async function connect() {
-  if (!state.provider) { banner("Install MetaMask to buy or mint prompts."); return; }
+  if (!state.provider) { showWalletHelp(); return; }
   try {
     await state.wallet.request({ method: "eth_requestAccounts" });
     const chainHex = await state.wallet.request({ method: "eth_chainId" });
@@ -428,3 +428,21 @@ function startHero() {
   }).catch(() => {});
 }
 startHero();
+
+
+// ---------- No-wallet help (Safari, iPhone, browsers without an extension) ----------
+function showWalletHelp() {
+  const mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+  const here = location.href.split("#")[0];
+  const hostPath = here.replace(/^https?:\/\//, "");
+  $("openMetaMask").href = `https://metamask.app.link/dapp/${hostPath}`;
+  $("openCoinbase").href = `https://go.cb-w.com/dapp?cb_url=${encodeURIComponent(here)}`;
+  $("openTrust").href = `https://link.trustwallet.com/open_url?coin_id=966&url=${encodeURIComponent(here)}`;
+  $("walletMobile").classList.toggle("hidden", !mobile);
+  $("walletDesktop").classList.toggle("hidden", mobile);
+  $("walletDialog").showModal();
+}
+$("closeWallet").addEventListener("click", () => $("walletDialog").close());
+$("copySiteLink").addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText(location.href.split("#")[0]); $("copySiteLink").textContent = "Link copied ✓"; } catch { /* ignore */ }
+});

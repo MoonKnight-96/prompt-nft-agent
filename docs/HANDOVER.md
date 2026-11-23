@@ -187,3 +187,13 @@ What **you** must do:
 5. **Don't** use URL shorteners, pop-ups that ask for signatures on page load, airdrop/"free mint"
    wording, or look-alike names of other brands. These raise scanner scores.
 6. **Keep the site stable**: a domain that has been live for a while with a clean history is trusted more.
+
+### Safari and phones
+Safari has no MetaMask extension, and phone browsers have no wallet. When no wallet is found, the
+"Connect wallet" button opens a help dialog: on phones it offers **Open in MetaMask / Coinbase Wallet /
+Trust Wallet** (the site reopens in that app's browser); on desktop Safari it suggests Chrome, Brave,
+Edge or Firefox with MetaMask. Browsing works everywhere without a wallet.
+
+**Optional upgrade:** add WalletConnect (Reown AppKit) so visitors can scan a QR code with any wallet
+app from any browser, including desktop Safari. It needs a free project ID from Reown Cloud
+(cloud.reown.com) in your name.

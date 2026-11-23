@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/style.css?v=4" />
+  <link rel="stylesheet" href="/static/style.css?v=5" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
 </head>
 <body>
@@ -111,6 +111,23 @@
     </section>
   </main>
 
+  <dialog id="walletDialog">
+    <h2>Connect a wallet</h2>
+    <p class="meta" id="walletWhy">This browser has no crypto wallet. You can still browse; buying and minting need a wallet.</p>
+    <div id="walletMobile" class="wallet-opts">
+      <a class="wallet-opt" id="openMetaMask" rel="noopener">🦊 Open in MetaMask app</a>
+      <a class="wallet-opt" id="openCoinbase" rel="noopener">🔵 Open in Coinbase Wallet</a>
+      <a class="wallet-opt" id="openTrust" rel="noopener">🛡️ Open in Trust Wallet</a>
+      <p class="meta">The site reopens inside the wallet app's browser, where Connect works. No app yet? Install one from the App Store or Google Play first.</p>
+    </div>
+    <div id="walletDesktop" class="wallet-opts">
+      <p>Safari doesn't support the MetaMask extension. Open this page in <b>Chrome, Brave, Edge or Firefox</b> with
+        <a href="https://metamask.io/download/" target="_blank" rel="noopener">MetaMask</a> installed, or open it on your phone in a wallet app.</p>
+      <button type="button" id="copySiteLink">Copy link to this page</button>
+    </div>
+    <div class="actions"><button id="closeWallet" class="primary">Close</button></div>
+  </dialog>
+
   <dialog id="unlockDialog">
     <h2 id="unlockTitle">Prompt</h2>
     <pre id="unlockText"></pre>
@@ -121,6 +138,6 @@
     <div>Runs on <span id="netName">…</span>. <span id="testNote">Testnet build: no real money.</span></div>
     <div class="meta" id="footerMeta">Contracts verified on Etherscan · <a href="https://github.com/MoonKnight-96/prompt-nft-agent" target="_blank" rel="noopener">Source on GitHub</a> · © 2026 Krishna Chaitanya Uppalapati</div>
   </footer>
-  <script src="/static/app.js?v=4"></script>
+  <script src="/static/app.js?v=5"></script>
 </body>
 </html>
