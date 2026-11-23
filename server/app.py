@@ -29,14 +29,28 @@ load_dotenv(ROOT / ".env")
 NONCE_TTL = 300  # seconds
 
 
+# Public facts about each supported chain, sent to the browser with /api/config.
+NETWORKS = {
+    "localhost": {"chainName": "Hardhat Local", "currency": "ETH", "testnet": True, "explorer": "",
+                  "publicRpc": "http://127.0.0.1:8545"},
+    "sepolia": {"chainName": "Ethereum Sepolia", "currency": "ETH", "testnet": True,
+                "explorer": "https://sepolia.etherscan.io", "publicRpc": "https://ethereum-sepolia-rpc.publicnode.com"},
+    "amoy": {"chainName": "Polygon Amoy", "currency": "POL", "testnet": True,
+             "explorer": "https://amoy.polygonscan.com", "publicRpc": "https://rpc-amoy.polygon.technology"},
+    "polygon": {"chainName": "Polygon", "currency": "POL", "testnet": False,
+                "explorer": "https://polygonscan.com", "publicRpc": "https://polygon-rpc.com"},
+}
+
+
 class Settings:
     def __init__(self):
         self.master_key = crypto_box.load_master_key(os.environ["MASTER_KEY"])
         self.rpc_url = os.getenv("RPC_URL", "http://127.0.0.1:8545")
         # Read-only RPC given to browsers so people can browse without a wallet.
         # Use a public endpoint here, never one containing a private API key.
-        self.public_rpc_url = os.getenv("PUBLIC_RPC_URL", self.rpc_url)
         self.network = os.getenv("NETWORK", "localhost")
+        self.public_rpc_url = (os.getenv("PUBLIC_RPC_URL")
+                               or NETWORKS.get(self.network, {}).get("publicRpc") or self.rpc_url)
         self.public_base_url = os.getenv("PUBLIC_BASE_URL", "http://127.0.0.1:8000")
         self.pinata_jwt = os.getenv("PINATA_JWT", "")
         self.storage_dir = Path(os.getenv("STORAGE_DIR", ROOT / "server" / "storage"))
@@ -124,7 +138,10 @@ def create_app(settings: Optional[Settings] = None, chain=None, storage: Optiona
             "abi": deployment["abi"],
             "storage": storage.mode,
             "rpcUrl": settings.public_rpc_url,
+            **{k: v for k, v in NETWORKS.get(deployment["network"], NETWORKS["localhost"]).items() if k != "publicRpc"},
             "assist": assistant.enabled,
+            "operator": ({"name": os.getenv("OPERATOR_NAME"), "termsUrl": os.getenv("OPERATOR_TERMS_URL", ""),
+                          "contact": os.getenv("OPERATOR_CONTACT", "")} if os.getenv("OPERATOR_NAME") else None),
             # Non-secret diagnostics: which commit is running, whether the key is present.
             "version": os.getenv("RENDER_GIT_COMMIT", "local")[:7],
             "assistKeySet": bool(os.getenv("ANTHROPIC_API_KEY", "").strip()),

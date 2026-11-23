@@ -5,10 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PromptNFT · Own the prompt, not just the picture</title>
   <meta name="description" content="Buy and sell AI prompts as NFTs. Prompts are encrypted and unlock only for the current owner." />
+  <meta property="og:title" content="PromptNFT · Own the prompt, not just the picture" />
+  <meta property="og:description" content="A marketplace for AI prompts. Encrypted, ownable, resellable, with creator royalties." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#07070d" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="/static/style.css?v=3" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
 </head>
 <body>
@@ -29,17 +34,40 @@
   <main>
     <section id="browse" class="panel">
       <div class="hero">
-        <span class="pill"><span class="dot"></span>Live on Ethereum Sepolia testnet</span>
+        <div class="hero-media" aria-hidden="true">
+          <canvas id="heroCanvas"></canvas>
+          <video id="heroVideo" muted loop playsinline preload="none" class="hidden"></video>
+          <div class="hero-fade"></div>
+        </div>
+        <span class="pill"><span class="dot"></span><span id="netPill">Live on Ethereum Sepolia testnet</span></span>
         <h1>Own the <span class="grad">prompt</span>,<br />not just the picture.</h1>
         <p class="lead">Every NFT holds one AI prompt. Buyers see the description and a sample output. The prompt itself stays encrypted and unlocks only for the wallet that owns it. Resell it, and the creator earns a royalty.</p>
         <div class="hero-cta">
           <button class="primary big" data-goto="create">✨ Create a prompt</button>
           <a class="ghost big" href="#market">Browse the market ↓</a>
         </div>
+        <div class="stats" id="stats">
+          <div><b id="statMinted">–</b><span>prompts minted</span></div>
+          <div><b id="statListed">–</b><span>for sale now</span></div>
+          <div><b id="statFloor">–</b><span>lowest price</span></div>
+          <div><b id="statCats">–</b><span>categories</span></div>
+        </div>
         <div class="features">
           <div><b>🔒 Encrypted</b><span>AES-256-GCM, unlocked by a signed message and an on-chain ownership check</span></div>
           <div><b>💸 Royalties</b><span>Creators earn up to 10% on every resale (ERC-2981)</span></div>
           <div><b>🤖 AI assist</b><span>Claude drafts your title, description and sample output</span></div>
+        </div>
+      </div>
+      <div class="marquee" aria-hidden="true"><div class="marquee-track" id="marquee"></div></div>
+      <div class="section-head" id="trendingHead"><h2>🔥 Trending</h2><span class="meta">Hand-picked by price and freshness</span></div>
+      <div class="carousel" id="trending"></div>
+      <div class="how">
+        <h2>How it works</h2>
+        <div class="steps">
+          <div><span class="num">1</span><b>Create</b><p>Write a prompt (or let AI draft it), add a sample output and a royalty.</p></div>
+          <div><span class="num">2</span><b>Mint</b><p>The prompt is encrypted and minted as an NFT you own. Only a hash goes on-chain.</p></div>
+          <div><span class="num">3</span><b>Sell</b><p>List it at your price. Buyers pay in crypto; you withdraw anytime.</p></div>
+          <div><span class="num">4</span><b>Earn forever</b><p>Every resale pays you a royalty automatically, up to 10%.</p></div>
         </div>
       </div>
       <div class="section-head"><h2>For sale now</h2><span class="meta">Newest first</span></div>
@@ -69,7 +97,7 @@
         <label>🔒 Prompt (encrypted, only the owner can read it) <textarea name="prompt" required minlength="20" maxlength="8000" rows="6"></textarea></label>
         <div class="row">
           <label>Creator royalty on resales (%) <input name="royalty" type="number" min="0" max="10" step="0.5" value="5" /></label>
-          <label>List for sale now at (ETH, optional) <input name="price" type="number" min="0" step="0.0001" placeholder="0.01" /></label>
+          <label>List for sale now at (<span class="cur">ETH</span>, optional) <input name="price" type="number" min="0" step="0.0001" placeholder="0.01" /></label>
         </div>
         <button class="primary big" type="submit">Encrypt &amp; mint</button>
       </form>
@@ -78,7 +106,7 @@
 
     <section id="mine" class="panel hidden">
       <div class="section-head"><h1>My prompts</h1></div>
-      <div class="proceeds"><div><span class="meta">Marketplace balance</span><b><span id="proceeds">0</span> ETH</b></div><button id="withdraw" class="primary">Withdraw</button></div>
+      <div class="proceeds"><div><span class="meta">Marketplace balance</span><b><span id="proceeds">0</span> <span class="cur">ETH</span></b></div><button id="withdraw" class="primary">Withdraw</button></div>
       <div id="myGrid" class="grid"></div>
     </section>
   </main>
@@ -90,9 +118,9 @@
   </dialog>
 
   <footer>
-    <div>Runs on <span id="netName">…</span>. Testnet build: no real money.</div>
-    <div class="meta">Contracts verified on Etherscan · <a href="https://github.com/MoonKnight-96/prompt-nft-agent" target="_blank" rel="noopener">Source on GitHub</a> · © 2026 Krishna Chaitanya Uppalapati</div>
+    <div>Runs on <span id="netName">…</span>. <span id="testNote">Testnet build: no real money.</span></div>
+    <div class="meta" id="footerMeta">Contracts verified on Etherscan · <a href="https://github.com/MoonKnight-96/prompt-nft-agent" target="_blank" rel="noopener">Source on GitHub</a> · © 2026 Krishna Chaitanya Uppalapati</div>
   </footer>
-  <script src="/static/app.js"></script>
+  <script src="/static/app.js?v=3"></script>
 </body>
 </html>

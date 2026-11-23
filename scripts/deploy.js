@@ -10,6 +10,19 @@ async function main() {
 
   console.log(`Network: ${network.name}  Deployer: ${deployer.address}`);
 
+  // Safety lock for networks that use real money.
+  const MAINNETS = ["polygon", "mainnet"];
+  if (MAINNETS.includes(network.name)) {
+    if (process.env.CONFIRM_MAINNET !== "yes") {
+      throw new Error(`Refusing to deploy to ${network.name} (real money). Re-run with CONFIRM_MAINNET=yes after the launch checklist.`);
+    }
+    if (!process.env.FEE_RECIPIENT) {
+      throw new Error("Set FEE_RECIPIENT in .env to the operator's wallet address before a mainnet deploy.");
+    }
+    const bal = await ethers.provider.getBalance(deployer.address);
+    console.log(`Deployer balance: ${ethers.formatEther(bal)} (native token)`);
+  }
+
   const nft = await ethers.deployContract("PromptNFT");
   await nft.waitForDeployment();
   const market = await ethers.deployContract("PromptMarketplace", [await nft.getAddress(), feeBps, feeRecipient]);

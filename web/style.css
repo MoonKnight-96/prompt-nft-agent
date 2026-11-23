@@ -145,3 +145,41 @@ footer { text-align: center; color: var(--muted); font-size: 14px; padding: 32px
   .hero { padding-top: 36px; }
   .section-head h1 { font-size: 26px; }
 }
+
+/* ---------- v3: living hero, art covers, stats, trending, marquee ---------- */
+.hero { position: relative; isolation: isolate; border-radius: 28px; overflow: hidden; margin-top: 16px; padding: 72px 20px 32px; }
+.hero-media { position: absolute; inset: 0; z-index: -1; }
+.hero-media canvas, .hero-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hero-media video { opacity: .55; }
+.hero-fade { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 30%, transparent 0%, color-mix(in srgb, var(--bg) 55%, transparent) 60%, var(--bg) 100%); }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; max-width: 760px; margin: 0 auto 28px; }
+.stats > div { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 12px 10px; backdrop-filter: blur(12px); display: flex; flex-direction: column; }
+.stats b { font-family: "Space Grotesk", sans-serif; font-size: 24px; }
+.stats span { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+@media (max-width: 640px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+
+.marquee { overflow: hidden; margin: 26px -16px 0; border-block: 1px solid var(--line); padding: 10px 0; mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
+.marquee-track { display: inline-flex; gap: 12px; white-space: nowrap; animation: marquee 38s linear infinite; }
+.marquee-track span { padding: 6px 14px; border-radius: 99px; border: 1px solid var(--line-strong); color: var(--muted); font-size: 14px; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+.carousel { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(260px, 300px); gap: 16px; overflow-x: auto; padding: 8px 2px 18px; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+.carousel .card { scroll-snap-align: start; }
+.carousel .sample, .carousel .card .meta:not(.price) { display: none; }
+
+.cover { height: 150px; overflow: hidden; }
+.cover svg.art { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cover svg.art .spin { transform-origin: 50% 50%; animation: spin 40s linear infinite; }
+.card:hover .cover svg.art .spin { animation-duration: 8s; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.share { padding: 6px 10px; font-size: 13px; }
+
+.how { margin: 36px 0 8px; }
+.how h2 { font-size: 24px; margin: 0 0 14px; }
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+.steps > div { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; position: relative; }
+.steps p { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+.steps .num { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 10px; background: var(--grad); color: #fff; font-weight: 700; margin-right: 8px; }
+.card.flash { animation: flash 1.6s ease-out; }
+@keyframes flash { 0%,40% { box-shadow: 0 0 0 3px var(--accent2); } }
+@media (prefers-reduced-motion: reduce) { .marquee-track, .cover svg.art .spin { animation: none; } }

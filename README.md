@@ -82,6 +82,15 @@ a second wallet buys, the buyer unlocks the prompt and the seller is locked out,
 Latest live run: [mint](https://sepolia.etherscan.io/tx/0xe42991eadd168ef7e38c574b3adaf0cfa64acc5e3cda1c96923b9612946ec0e4),
 [purchase](https://sepolia.etherscan.io/tx/0x179e80d07bc328ab70fedc07cdf88186ba4148cbe15f1f51e7cc3fedb1b35fcc).
 
+## Going live on Polygon / handing over
+
+- `docs/HANDOVER.md`: operator guide (accounts, Amoy rehearsal, Polygon mainnet deploy, hosting, operations)
+- `docs/LAUNCH_CHECKLIST.md`: tick every box before a real-money deploy
+- `docs/legal/`: draft transfer-of-rights, terms of service and privacy policy (for a lawyer's review)
+- `render.polygon.yaml`: Render blueprint for the live Polygon site; `render.yaml` stays the Sepolia demo
+- Networks: `sepolia`, `amoy` (Polygon test) and `polygon` (mainnet, protected by `CONFIRM_MAINNET=yes`)
+- `web/media/hero.mp4` (optional): drop in an AI-generated loop video and it plays in the hero
+
 ## Hosting
 
 `render.yaml` deploys the server and website to Render. Set the secret values (`MASTER_KEY`,
