@@ -96,14 +96,21 @@ class UnlockRequest(BaseModel):
     signature: str
 
 
-def unlock_message(token_id: int, address: str, nonce: str, issued: int) -> str:
+def unlock_message(token_id: int, address: str, nonce: str, issued: int, domain: str = "localhost",
+                   scheme: str = "http", chain_id: int = 1) -> str:
+    """Sign-In with Ethereum (EIP-4361) message. Wallets recognise this format, show the requesting
+    domain and warn only if it doesn't match the site, so honest use isn't flagged as suspicious."""
+    iso = lambda t: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t))
     return (
-        "Prompt NFT: unlock request\n"
-        f"Token: #{token_id}\n"
-        f"Wallet: {address}\n"
+        f"{domain} wants you to sign in with your Ethereum account:\n"
+        f"{address}\n\n"
+        f"Unlock prompt NFT #{token_id}. This only proves you own it: no transaction, no gas, no approval.\n\n"
+        f"URI: {scheme}://{domain}\n"
+        "Version: 1\n"
+        f"Chain ID: {chain_id}\n"
         f"Nonce: {nonce}\n"
-        f"Issued: {issued}\n"
-        "Signing this proves you own the NFT. It costs no gas."
+        f"Issued At: {iso(issued)}\n"
+        f"Expiration Time: {iso(issued + NONCE_TTL)}"
     )
 
 
@@ -117,7 +124,7 @@ def create_app(settings: Optional[Settings] = None, chain=None, storage: Optiona
     if chain is None and deployment:
         chain = Chain(settings.rpc_url, deployment)
     storage = storage or Storage(settings.storage_dir, settings.public_base_url, settings.pinata_jwt)
-    nonces: Dict[Tuple[int, str], Tuple[str, int]] = {}
+    nonces: Dict[Tuple[int, str], Tuple[str, int]] = {}  # (token, address) -> (exact message, issued)
 
     app = FastAPI(title="Prompt NFT")
 
@@ -185,13 +192,18 @@ def create_app(settings: Optional[Settings] = None, chain=None, storage: Optiona
         return {"tokenURI": uri, "promptHash": phash}
 
     @app.get("/api/nonce")
-    def nonce(token_id: int, address: str):
+    def nonce(token_id: int, address: str, request: Request):
         if not Web3.is_address(address):
             raise HTTPException(400, "Invalid address")
         addr = Web3.to_checksum_address(address)
         n, issued = secrets.token_hex(16), int(time.time())
-        nonces[(token_id, addr)] = (n, issued)
-        return {"message": unlock_message(token_id, addr, n, issued)}
+        # Bind the message to the host the visitor actually sees, so the wallet's domain check passes.
+        host = request.headers.get("x-forwarded-host") or request.headers.get("host") or "localhost"
+        scheme = request.headers.get("x-forwarded-proto") or request.url.scheme
+        msg = unlock_message(token_id, addr, n, issued, host.split(",")[0].strip(), scheme.split(",")[0].strip(),
+                             int(deployment["chainId"]) if deployment else 1)
+        nonces[(token_id, addr)] = (msg, issued)
+        return {"message": msg}
 
     @app.post("/api/unlock")
     def unlock(req: UnlockRequest):
@@ -201,7 +213,7 @@ def create_app(settings: Optional[Settings] = None, chain=None, storage: Optiona
         entry = nonces.pop((req.token_id, addr), None)  # single use
         if not entry or time.time() - entry[1] > NONCE_TTL:
             raise HTTPException(401, "Unlock request expired. Try again.")
-        msg = unlock_message(req.token_id, addr, *entry)
+        msg = entry[0]
         try:
             signer = Account.recover_message(encode_defunct(text=msg), signature=req.signature)
         except Exception:

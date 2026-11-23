@@ -287,10 +287,14 @@ async function onAssist() {
 }
 
 async function approveAndList(tokenId, priceEth, say = () => {}) {
-  const ok = await state.nft.isApprovedForAll(state.account, state.cfg.marketplace);
-  if (!ok) {
-    say("Approve the marketplace in MetaMask (one time)…");
-    await (await state.nft.setApprovalForAll(state.cfg.marketplace, true)).wait();
+  // Approve only THIS token for the marketplace. We never ask for "approve all"
+  // (setApprovalForAll): it's what wallet-draining sites request, so wallets flag it.
+  const market = state.cfg.marketplace.toLowerCase();
+  const approved = (await state.nft.getApproved(tokenId)).toLowerCase() === market
+    || (await state.nft.isApprovedForAll(state.account, state.cfg.marketplace));
+  if (!approved) {
+    say(`Approve the marketplace to transfer prompt #${tokenId} only, if it sells…`);
+    await (await state.nft.approve(state.cfg.marketplace, tokenId)).wait();
   }
   say("Confirm the listing in MetaMask…");
   await (await state.market.list(tokenId, ethers.parseEther(String(priceEth)))).wait();

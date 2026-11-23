@@ -161,3 +161,29 @@ This is a checklist of topics to raise with a Chartered Accountant and a lawyer,
 - Use a hardware wallet for the owner/fee wallet once real money flows.
 - Turn on 2-factor authentication for GitHub, Render, Alchemy, Pinata, Anthropic, the exchange and the domain registrar.
 - Before significant volume, get an independent **smart-contract security review** (audit).
+
+---
+
+## Part 8: Keeping wallets from flagging the site
+
+Wallets (MetaMask, Phantom, Rabby, Trust) use security scanners (for example Blockaid and Blowfish)
+that warn about sites that look like scams. The app is built to avoid the usual triggers:
+
+- **No "approve all" requests.** Listing approves only the single NFT being listed (`approve`), never
+  `setApprovalForAll`, which wallet-drainer sites use.
+- **Standard sign-in message.** Unlocking uses Sign-In with Ethereum (EIP-4361), bound to your domain, with
+  a 5-minute expiry. Wallets recognise it and confirm the domain matches the site.
+- **Wallet connects only when the visitor clicks "Connect wallet"**; nothing pops up on page load.
+
+What **you** must do:
+1. **Use your own domain**, not `*.onrender.com`. Shared hosting domains are often flagged because
+   phishing sites use them too. Keep HTTPS on (Render does this automatically).
+2. **Verify both contracts** on Polygonscan (Part 4). Unverified contracts look suspicious to scanners.
+3. **Request a name tag** for your contracts on Polygonscan (contract page → "Update name tag").
+4. **If a wallet still warns**, file a false-positive report quickly:
+   - MetaMask: open an issue at `github.com/MetaMask/eth-phishing-detect` (include your domain and contract addresses)
+   - Blockaid (used by MetaMask and others): use the false-positive report on Blockaid's website
+   - Phantom: report via Phantom's support / in-app "report false positive"
+5. **Don't** use URL shorteners, pop-ups that ask for signatures on page load, airdrop/"free mint"
+   wording, or look-alike names of other brands. These raise scanner scores.
+6. **Keep the site stable**: a domain that has been live for a while with a clean history is trusted more.
