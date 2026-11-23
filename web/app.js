@@ -438,6 +438,7 @@ function showWalletHelp() {
   $("openMetaMask").href = `https://metamask.app.link/dapp/${hostPath}`;
   $("openCoinbase").href = `https://go.cb-w.com/dapp?cb_url=${encodeURIComponent(here)}`;
   $("openTrust").href = `https://link.trustwallet.com/open_url?coin_id=966&url=${encodeURIComponent(here)}`;
+  $("walletQr").classList.toggle("hidden", !state.cfg?.walletConnectProjectId);
   $("walletMobile").classList.toggle("hidden", !mobile);
   $("walletDesktop").classList.toggle("hidden", mobile);
   $("walletDialog").showModal();
@@ -446,3 +447,29 @@ $("closeWallet").addEventListener("click", () => $("walletDialog").close());
 $("copySiteLink").addEventListener("click", async () => {
   try { await navigator.clipboard.writeText(location.href.split("#")[0]); $("copySiteLink").textContent = "Link copied ✓"; } catch { /* ignore */ }
 });
+
+// ---------- WalletConnect (QR code), enabled when the server has WALLETCONNECT_PROJECT_ID ----------
+const WC_URL = "https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.17.0/+esm";
+async function useWalletConnect() {
+  const btn = $("useWalletConnect"); btn.disabled = true; btn.textContent = "Opening QR code…";
+  try {
+    const { EthereumProvider } = await import(WC_URL);
+    const wc = await EthereumProvider.init({
+      projectId: state.cfg.walletConnectProjectId,
+      chains: [state.cfg.chainId],
+      rpcMap: { [state.cfg.chainId]: state.cfg.rpcUrl },
+      showQrModal: true,
+      metadata: { name: "PromptNFT", description: "Buy and sell AI prompts as NFTs", url: location.origin, icons: [] },
+    });
+    $("walletDialog").close();
+    await wc.connect();
+    wc.on("disconnect", () => location.reload());
+    wc.on("accountsChanged", () => location.reload());
+    state.wallet = wc;
+    state.provider = new ethers.BrowserProvider(wc);
+    await connect();
+  } catch (e) {
+    banner("WalletConnect failed: " + errText(e));
+  } finally { btn.disabled = false; btn.textContent = "📱 Connect with QR code (WalletConnect)"; }
+}
+$("useWalletConnect").addEventListener("click", useWalletConnect);

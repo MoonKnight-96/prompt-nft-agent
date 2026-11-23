@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/style.css?v=5" />
+  <link rel="stylesheet" href="/static/style.css?v=6" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
 </head>
 <body>
@@ -114,6 +114,10 @@
   <dialog id="walletDialog">
     <h2>Connect a wallet</h2>
     <p class="meta" id="walletWhy">This browser has no crypto wallet. You can still browse; buying and minting need a wallet.</p>
+    <div id="walletQr" class="wallet-opts hidden">
+      <button type="button" class="primary big" id="useWalletConnect">📱 Connect with QR code (WalletConnect)</button>
+      <p class="meta">Scan with MetaMask, Trust, Coinbase, Rainbow or any WalletConnect wallet. Works in Safari.</p>
+    </div>
     <div id="walletMobile" class="wallet-opts">
       <a class="wallet-opt" id="openMetaMask" rel="noopener">🦊 Open in MetaMask app</a>
       <a class="wallet-opt" id="openCoinbase" rel="noopener">🔵 Open in Coinbase Wallet</a>
@@ -138,6 +142,6 @@
     <div>Runs on <span id="netName">…</span>. <span id="testNote">Testnet build: no real money.</span></div>
     <div class="meta" id="footerMeta">Contracts verified on Etherscan · <a href="https://github.com/MoonKnight-96/prompt-nft-agent" target="_blank" rel="noopener">Source on GitHub</a> · © 2026 Krishna Chaitanya Uppalapati</div>
   </footer>
-  <script src="/static/app.js?v=5"></script>
+  <script src="/static/app.js?v=6"></script>
 </body>
 </html>

@@ -147,6 +147,8 @@ def create_app(settings: Optional[Settings] = None, chain=None, storage: Optiona
             "rpcUrl": settings.public_rpc_url,
             **{k: v for k, v in NETWORKS.get(deployment["network"], NETWORKS["localhost"]).items() if k != "publicRpc"},
             "assist": assistant.enabled,
+            # Public WalletConnect (Reown Cloud) project ID; enables "Connect with QR code". Not a secret.
+            "walletConnectProjectId": os.getenv("WALLETCONNECT_PROJECT_ID", "").strip(),
             "operator": ({"name": os.getenv("OPERATOR_NAME"), "termsUrl": os.getenv("OPERATOR_TERMS_URL", ""),
                           "contact": os.getenv("OPERATOR_CONTACT", "")} if os.getenv("OPERATOR_NAME") else None),
             # Non-secret diagnostics: which commit is running, whether the key is present.

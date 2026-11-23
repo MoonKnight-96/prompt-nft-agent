@@ -25,6 +25,8 @@ services:
         sync: false
       - key: ANTHROPIC_API_KEY
         sync: false
+      - key: WALLETCONNECT_PROJECT_ID   # free public ID from cloud.reown.com; enables QR connect (Safari)
+        sync: false
       - key: ASSIST_PER_HOUR
         value: "5"
       - key: ASSIST_PER_DAY

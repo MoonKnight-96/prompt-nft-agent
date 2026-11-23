@@ -7,6 +7,38 @@ encrypted, and only the wallet that currently owns the NFT can unlock it. When t
 NFT is resold, the new owner gets access, the previous owner loses it, and the
 original creator earns a royalty.
 
+**Live demo (Ethereum Sepolia test network, no real money):** https://prompt-nft-market.onrender.com
+
+## Case study
+
+**Problem.** Prompts are valuable intellectual property, but sharing one means giving it away. Existing
+"prompt marketplaces" deliver the text in plain form, so a buyer can resell it freely and the creator
+earns nothing further.
+
+**Approach.** Make the prompt itself the asset: each prompt is an NFT whose content stays encrypted,
+readable only by whoever owns the token *right now*. Ownership changes on-chain, and access follows it
+automatically. Resales pay the creator a royalty.
+
+**Key design decisions**
+| Decision | Why |
+|---|---|
+| Envelope encryption (AES-256-GCM), key bound to the prompt hash | Each prompt has its own data key; a ciphertext can't be swapped onto another token |
+| Unlock = Sign-In with Ethereum (EIP-4361) + `ownerOf` check on-chain | Proves wallet control without gas; single-use nonce and 5-minute expiry stop replay |
+| Fixed-price listings without escrow, pull-based payouts | Seller keeps the NFT until sale; withdrawals avoid reentrancy and failed-transfer risk |
+| ERC-2981 royalties, capped fees (10% royalty, 5% platform) | Creators earn on resales; caps are enforced in the contract, not by policy |
+| Per-token approvals, no `setApprovalForAll` from the site | Avoids the wallet-drainer pattern that wallet security scanners flag |
+| Keccak hash of the normalized prompt on-chain | Blocks exact duplicates without revealing the prompt |
+| AI assist (Claude, structured JSON output) with per-visitor and daily limits | Lowers the effort to list; API key stays server-side, abuse is rate-limited |
+
+**Results**
+- Contracts deployed and **verified on Etherscan**; 11 contract tests and 12 server tests.
+- A scripted **live end-to-end test on Sepolia**: encrypt → IPFS → mint → list → second wallet buys → buyer
+  unlocks, seller is locked out → seller withdraws.
+- Network-aware build: the same code runs on Sepolia, Polygon Amoy or Polygon mainnet by configuration.
+
+**What I'd do next:** threshold encryption (e.g. Lit Protocol) so no single server holds the master key,
+paraphrase detection for duplicates, and an independent contract audit before handling real funds.
+
 ## How it works
 
 ```
