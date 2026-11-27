@@ -9,7 +9,7 @@ encrypted, and only the wallet that currently owns the NFT can unlock it. When t
 NFT is resold, the new owner gets access, the previous owner loses it, and the
 original creator earns a royalty.
 
-**Live demo (Ethereum Sepolia test network, no real money):** https://prompt-nft-market.onrender.com
+**Live demo (Ethereum Sepolia test network, no real money):** https://vaultedprompt.com
 
 ## Case study
 
